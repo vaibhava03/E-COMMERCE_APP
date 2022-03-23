@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<!-- saved from url=(0035)http://127.0.0.1:5500/expenses.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DailyExpenses</title>
+    
+    <script src="./DailyExpenses_files/axios.min.js.download"></script>
+
+
+<link rel="stylesheet" href="./DailyExpenses_files/main.css"></head>
+<body class="body">
+    <header class="header">
+        <h2>Expense Tracker Application</h2>
+        </header>
+        <section id="section"><h3 id="LBHead">LeaderBoard</h3><div class="leaderB"><h6 class="user">1 user2</h6><div class="HExpense" id="0" style="display: none;"><h5>--960</h5></div><h6 class="user">2 user1</h6><div class="HExpense" id="1" style="display: none;"><h5>--840</h5></div></div></section>
+
+        <div class="premium_div">
+            <div class="PText">
+            <h4>Premium Membership</h4>
+        </div>
+        <ul>
+            <li>get dark theme</li>
+        </ul>
+            <button class="premiumBtn" id="premiumBtn">BUY NOW</button>
+        </div>
+    <div class="div1">
+        <h3>Daily Expenses</h3>
+    <form id="expenseForm">
+        <label for="Mspent">Money Spent</label><br>
+        <input type="number" id="Mspent" name="Mspent"><br>
+        <label for="description">Description of Expense</label><br>
+        <textarea id="description" name="descrpition"></textarea><br>      
+        <label for="category">Select Category</label>
+        <select name="category" id="category">
+            <option value="food">Food</option>
+            <option value="health">Health</option>
+            <option value="transport">Transport</option>
+            <option value="utilities">Utilities</option>
+            <option value="insurance">Insurance</option>
+            <option value="clothing">Clothing</option>
+            <option value="others">Others</option>
+        </select>
+        <input type="submit" id="submit" value="ADD EXPENSES"> 
+    </form>
+</div>
+
+<script>
+
+    const myForm =document.getElementById('expenseForm');
+    const premiumBtn=document.getElementById('premiumBtn');
+    myForm.addEventListener('submit', (e) =>{
+       e.preventDefault();
+       const money=document.getElementById("Mspent").value;
+       const description=document.getElementById("description").value;
+       const category=document.getElementById("category").value;
+       const token=localStorage.getItem('token');
+      const myObj={
+          money:money,
+          description:description,
+          category:category 
+      }
+      const head={
+          headers:{
+              'Authorization':token
+          }
+      }
+      console.log(myObj);
+       axios.post("http://localhost:3000/user/expense", myObj, head)
+       .then(res =>{
+           console.log(res);
+       })
+       .catch(err => console.log(err));
+    })
+    premiumBtn.addEventListener('click', (e) =>{
+        const a=document.createElement('a');
+                a.href="razorpay.html";
+                a.target='_blank';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+    })
+    const order=localStorage.getItem("orderId");
+    if(order)
+    { 
+        console.log(order);
+        const leaderB=document.createElement('div');
+        leaderB.className='leaderB';
+        const LBHead=document.createElement('h3');
+        LBHead.id="LBHead";
+        LBHead.innerText="LeaderBoard";
+        const section=document.getElementById('section');
+
+        section.appendChild(LBHead);
+        document.body.appendChild(leaderB);
+        axios.get('http://localhost:3000/user/leaderboard')
+        .then(res =>{
+            for(var i=0;i<res.data.length;i++)
+            {
+                leaderB.innerHTML= leaderB.innerHTML+`<h6 class="user">${i+1} ${res.data[i].userName}</h5><div class="HExpense" id=${i} ><h5>--${(res.data[i].expenses)*120}</h6></div>`;
+            }
+        })
+        .catch(err => console.log(err));
+         section.appendChild(leaderB);
+
+         leaderB.addEventListener('click', (e) =>{
+            console.log(e.target.parentNode.className);
+            if(e.target.nextElementSibling.className==="HExpense")
+            {
+             const HExpense=e.target.nextElementSibling;
+             HExpense.style.display="block";
+            }
+         })
+         leaderB.addEventListener('mouseover', (e) =>{
+            if(e.target.nextElementSibling.className==="HExpense")
+            {
+             const HExpense=e.target.nextElementSibling;
+             HExpense.style.display="none";
+            }
+         })
+    }
+</script>
+<!-- Code injected by live-server -->
+<script type="text/javascript">
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+</body></html>
