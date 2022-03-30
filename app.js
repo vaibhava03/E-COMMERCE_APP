@@ -161,6 +161,12 @@ app.get('/getproducts-count',(req, res) =>
     console.log(req.body);
  });
 
+
+app.use((req,res) =>{
+res.sendFile(path.join(__dirname, '.FRONTEND/home.html'))
+});
+
+
     Product.belongsTo(User,{constraints: true, onDelete:'CASCADE'});
     User.hasMany(Product);
     User.hasOne(Cart);
